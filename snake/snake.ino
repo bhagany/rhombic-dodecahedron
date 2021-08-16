@@ -13,7 +13,7 @@ CRGB leds[NUM_LEDS];
 // data lines are wired up. -1 is "empty", which indicates that
 // these vertices are degree 3, rather than the maximum degree
 // of 4.
-int16_t vertexLeds[NUM_VERTICES][MAX_VERTEX_DEGREE] = {
+const int16_t vertexLeds[NUM_VERTICES][MAX_VERTEX_DEGREE] = {
   {0, 47, 48, -1},
   {11, 12, 143, 144},
   {23, 24, 108, -1},
@@ -30,16 +30,17 @@ int16_t vertexLeds[NUM_VERTICES][MAX_VERTEX_DEGREE] = {
   {251, 252, 264, 276},
 };
 uint16_t led;
-bool choseRecently;
+bool newVertex;
 int8_t edgeDirection;
 uint8_t hue = 0;
 
 void setup() {
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.setBrightness(64);
+  FastLED.setBrightness(128);
+  FastLED.setMaxPowerInMilliWatts(900);
   randomSeed(analogRead(A0));
   led = random(NUM_LEDS);
-  choseRecently = false;
+  newVertex = false;
   const int8_t edgeChoices[] = {-1, 1};
   edgeDirection = edgeChoices[random(1)];
 }
@@ -50,7 +51,7 @@ void loop() {
 
   // I have no idea what this is, except that it uses interrupts
   EVERY_N_MILLISECONDS(30) {
-    if (!choseRecently
+    if (!newVertex
         && (led % LEDS_PER_EDGE == 0
             || led % LEDS_PER_EDGE == LEDS_PER_EDGE - 1)) {
       // We have encountered a vertex
@@ -95,12 +96,12 @@ void loop() {
       // we are still at a vertex, but we are leaving it; this flag ensures
       // that we travel along the chosen edge instead of going back and choosing
       // a new edge
-      choseRecently = true;
+      newVertex = true;
     } else {
       // we're not at a vertex, so continue along the edge
       led += edgeDirection;
       // ensure that the next vertex encounter results in an edge choice
-      choseRecently = false;
+      newVertex = false;
     }
     hue++;
     fadeToBlackBy(leds, NUM_LEDS, 16);
