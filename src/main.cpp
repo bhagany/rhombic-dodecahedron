@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #define FASTLED_INTERNAL  // suppress annoying compiler messages from FastLED
 #include <FastLED.h>
 #define LED_PIN           13
