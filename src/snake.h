@@ -1,3 +1,6 @@
+#ifndef __RHOMBIC_DODECAHEDRON_SNAKE__
+#define __RHOMBIC_DODECAHEDRON_SNAKE__
+
 #include "defs.h"
 
 struct snake {
@@ -80,3 +83,5 @@ void snekPlz(struct snake *snek, CRGB *leds) {
     fadeToBlackBy(leds, NUM_LEDS, 16);
   }
 }
+
+#endif
