@@ -22,11 +22,21 @@ struct snake initializeSnake() {
 }
 
 void snekPlz(struct snake *snek, CRGB *leds) {
-  leds[snek->led] = CHSV(snek->hue, 255, 255);
   FastLED.show();
 
   // I have no idea what this is, except that it uses interrupts
   EVERY_N_MILLISECONDS(30) {
+    CRGB snekPixel = CHSV(snek->hue, 255, 255);
+
+    if (leds[snek->led].getLuma() > 0) {
+      // leds[snek->led] = blend(leds[snek->led], snekPixel, 128);
+      uint16_t r = (uint8_t)min(255, leds[snek->led].r + snekPixel.r);
+      uint16_t g = (uint8_t)min(255, leds[snek->led].g + snekPixel.g);
+      uint16_t b = (uint8_t)min(255, leds[snek->led].b + snekPixel.b);
+      leds[snek->led] = CRGB(r, g, b);
+    } else {
+      leds[snek->led] = snekPixel;
+    }
     if (!snek->newVertex
         && (snek->led % LEDS_PER_EDGE == 0
             || snek->led % LEDS_PER_EDGE == LEDS_PER_EDGE - 1)) {
